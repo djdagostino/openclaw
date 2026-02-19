@@ -51,7 +51,7 @@ In your `openclaw.config.json`:
 {
   "plugins": ["@openclaw/memory-cognee"],
   "memory-cognee": {
-    "cogneeUrl": "http://localhost:8000",
+    "cogneeUrl": "http://localhost:8001",
     "llmProvider": "openai",
     "llmApiKey": "sk-...",
     "llmModel": "gpt-4o-mini",
@@ -177,7 +177,7 @@ openclaw cognee explore "TypeScript" --depth 3
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `cogneeUrl` | string | `http://localhost:8000` | Bridge server URL |
+| `cogneeUrl` | string | `http://localhost:8001` | Bridge server URL |
 | `llmProvider` | enum | `openai` | LLM for entity extraction |
 | `llmApiKey` | string | - | API key for LLM |
 | `llmModel` | string | `gpt-4o-mini` | Model for extraction |

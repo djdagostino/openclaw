@@ -57,7 +57,7 @@ async def ingest_files(
     pattern: str = "*",
     recursive: bool = False,
     run_cognify: bool = False,
-    bridge_url: str = "http://localhost:8000",
+    bridge_url: str = "http://localhost:8001",
     dry_run: bool = False,
 ):
     """Ingest all matching files into Cognee."""
@@ -216,7 +216,7 @@ Supported file types:
     parser.add_argument("--pattern", default="*", help="File pattern to match (e.g., '*.md')")
     parser.add_argument("--recursive", "-r", action="store_true", help="Search subdirectories")
     parser.add_argument("--cognify", "-c", action="store_true", help="Build knowledge graph after ingestion")
-    parser.add_argument("--bridge-url", default="http://localhost:8000", help="Cognee bridge URL")
+    parser.add_argument("--bridge-url", default="http://localhost:8001", help="Cognee bridge URL")
     parser.add_argument("--dry-run", "-n", action="store_true", help="Show what would be ingested without doing it")
 
     args = parser.parse_args()

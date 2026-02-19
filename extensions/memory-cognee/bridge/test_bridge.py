@@ -21,7 +21,7 @@ async def test_bridge():
         subprocess.check_call([sys.executable, "-m", "pip", "install", "httpx"])
         import httpx
 
-    base_url = "http://localhost:8000"
+    base_url = "http://localhost:8001"
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         print("=" * 60)

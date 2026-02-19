@@ -44,7 +44,7 @@ export type CogneeConfig = {
 export const DEFAULT_CAPTURE_MAX_CHARS = 500;
 
 const DEFAULTS: CogneeConfig = {
-  cogneeUrl: "http://localhost:8000",
+  cogneeUrl: "http://localhost:8001",
   dataDir: "~/.openclaw/memory/cognee",
   autoRecall: true,
   autoCapture: true,
@@ -102,7 +102,7 @@ export const cogneeConfigSchema = {
   uiHints: {
     cogneeUrl: {
       label: "Cognee Bridge URL",
-      placeholder: "http://localhost:8000",
+      placeholder: "http://localhost:8001",
       help: "URL of the Cognee bridge server",
     },
     autoRecall: {

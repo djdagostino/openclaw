@@ -57,7 +57,7 @@ echo [4/4] Starting OpenClaw...
 echo.
 echo ============================================
 echo  Both services starting!
-echo  - Cognee bridge: http://localhost:8000
+echo  - Cognee bridge: http://localhost:8001
 echo  - OpenClaw: Starting now...
 echo ============================================
 echo.

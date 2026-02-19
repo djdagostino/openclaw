@@ -5,7 +5,7 @@
     }
   },
   "memory-cognee": {
-    "cogneeUrl": "http://localhost:8000",
+    "cogneeUrl": "http://localhost:8001",
     "memoryPolicy": true,
     "minDurabilityScore": 0.4,
     "autoRecall": true,

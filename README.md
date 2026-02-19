@@ -71,7 +71,7 @@ Traditional memory stores text chunks and retrieves via vector similarity. This 
 │  CLI:   openclaw memory status/search/add/build/explore         │
 │                                                                 │
 └──────────────────────────┬──────────────────────────────────────┘
-                           │ HTTP (localhost:8000)
+                           │ HTTP (localhost:8001)
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                  Cognee Bridge (Python/FastAPI)                 │
@@ -161,7 +161,7 @@ npm start
 **4. Verify it's running:**
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8001/health
 # → {"status":"healthy","initialized":true}
 ```
 
@@ -169,17 +169,17 @@ curl http://localhost:8000/health
 
 ```bash
 # Add content
-curl -X POST http://localhost:8000/add \
+curl -X POST http://localhost:8001/add \
   -H "Content-Type: application/json" \
   -d '{"text":"We use PostgreSQL for the database"}'
 
 # Build knowledge graph
-curl -X POST http://localhost:8000/cognify \
+curl -X POST http://localhost:8001/cognify \
   -H "Content-Type: application/json" \
   -d '{"full_rebuild":false}'
 
 # Search
-curl -X POST http://localhost:8000/search \
+curl -X POST http://localhost:8001/search \
   -H "Content-Type: application/json" \
   -d '{"query":"database","limit":5}'
 ```
@@ -208,7 +208,7 @@ The `openclaw.config.json` in repo root configures the extension:
     }
   },
   "memory-cognee": {
-    "cogneeUrl": "http://localhost:8000",
+    "cogneeUrl": "http://localhost:8001",
     "memoryPolicy": true,
     "minDurabilityScore": 0.4,
     "autoRecall": true,

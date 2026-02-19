@@ -38,21 +38,21 @@ python start_server.py
 
 ```bash
 # Health check
-curl http://localhost:8000/health
+curl http://localhost:8001/health
 # Expected: {"status":"healthy","initialized":true}
 
 # Add some content
-curl -X POST http://localhost:8000/add \
+curl -X POST http://localhost:8001/add \
   -H "Content-Type: application/json" \
   -d '{"text":"We decided to use PostgreSQL for the database."}'
 
 # Build knowledge graph
-curl -X POST http://localhost:8000/cognify \
+curl -X POST http://localhost:8001/cognify \
   -H "Content-Type: application/json" \
   -d '{"full_rebuild":false}'
 
 # Search
-curl -X POST http://localhost:8000/search \
+curl -X POST http://localhost:8001/search \
   -H "Content-Type: application/json" \
   -d '{"query":"database","limit":5}'
 ```
@@ -69,7 +69,7 @@ Add to your `openclaw.config.json`:
     }
   },
   "memory-cognee": {
-    "cogneeUrl": "http://localhost:8000"
+    "cogneeUrl": "http://localhost:8001"
   }
 }
 ```
@@ -109,7 +109,7 @@ extensions/memory-cognee/
 │    - CLI: openclaw memory status/search/add/build/explore      │
 │                                                                 │
 └──────────────────────────┬──────────────────────────────────────┘
-                           │ HTTP/REST (localhost:8000)
+                           │ HTTP/REST (localhost:8001)
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                  Cognee Bridge (Python/FastAPI)                 │
@@ -243,41 +243,41 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 
 ```bash
 # 1. Health check
-curl http://localhost:8000/health
+curl http://localhost:8001/health
 # → {"status":"healthy","initialized":true}
 
 # 2. Check status
-curl http://localhost:8000/status
+curl http://localhost:8001/status
 # → {"healthy":true,"cognee_version":"0.4.0","document_count":0,...}
 
 # 3. Add content
-curl -X POST http://localhost:8000/add \
+curl -X POST http://localhost:8001/add \
   -H "Content-Type: application/json" \
   -d '{"text":"We decided to use PostgreSQL for the user database."}'
 # → {"success":true,"document_id":null,"message":"Content added (51 chars)"}
 
-curl -X POST http://localhost:8000/add \
+curl -X POST http://localhost:8001/add \
   -H "Content-Type: application/json" \
   -d '{"text":"The API key is stored in the .env file."}'
 
-curl -X POST http://localhost:8000/add \
+curl -X POST http://localhost:8001/add \
   -H "Content-Type: application/json" \
   -d '{"text":"I prefer TypeScript with strict mode enabled."}'
 
 # 4. Build knowledge graph (extracts entities, creates relationships)
-curl -X POST http://localhost:8000/cognify \
+curl -X POST http://localhost:8001/cognify \
   -H "Content-Type: application/json" \
   -d '{"full_rebuild":false}'
 # → {"success":true,"nodes_created":0,"edges_created":0,"message":"Knowledge graph updated"}
 
 # 5. Search
-curl -X POST http://localhost:8000/search \
+curl -X POST http://localhost:8001/search \
   -H "Content-Type: application/json" \
   -d '{"query":"database","limit":5,"min_score":0.1}'
 # → {"results":[{"id":"0","text":"We decided to use PostgreSQL...","score":0.5,...}],...}
 
 # 6. Explore graph around an entity
-curl -X POST http://localhost:8000/graph/explore \
+curl -X POST http://localhost:8001/graph/explore \
   -H "Content-Type: application/json" \
   -d '{"entity":"PostgreSQL","depth":2,"include_content":true}'
 # → {"center_node":{...},"nodes":[...],"edges":[]}
@@ -324,7 +324,7 @@ Add to your `openclaw.config.json`:
 
   // Cognee configuration
   "memory-cognee": {
-    "cogneeUrl": "http://localhost:8000",
+    "cogneeUrl": "http://localhost:8001",
 
     // Memory policy (filter ephemeral content)
     "memoryPolicy": true,
@@ -352,7 +352,7 @@ Add to your `openclaw.config.json`:
 
 2. **Verify bridge is running**:
    ```bash
-   curl http://localhost:8000/health
+   curl http://localhost:8001/health
    ```
 
 3. **Start OpenClaw** (in your project directory):
@@ -543,17 +543,17 @@ pip install cognee==0.4.0
 
 1. Check content was added:
    ```bash
-   curl http://localhost:8000/status
+   curl http://localhost:8001/status
    ```
 
 2. Build the knowledge graph:
    ```bash
-   curl -X POST http://localhost:8000/cognify -H "Content-Type: application/json" -d '{}'
+   curl -X POST http://localhost:8001/cognify -H "Content-Type: application/json" -d '{}'
    ```
 
 3. Lower minimum score:
    ```bash
-   curl -X POST http://localhost:8000/search \
+   curl -X POST http://localhost:8001/search \
      -H "Content-Type: application/json" \
      -d '{"query":"test","min_score":0.0}'
    ```
@@ -566,7 +566,7 @@ pip install cognee==0.4.0
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `cogneeUrl` | string | `http://localhost:8000` | Bridge server URL |
+| `cogneeUrl` | string | `http://localhost:8001` | Bridge server URL |
 
 ### Memory Policy Settings
 
