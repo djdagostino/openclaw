@@ -1,0 +1,16 @@
+{
+  "plugins": {
+    "slots": {
+      "memory": "./extensions/memory-cognee"
+    }
+  },
+  "memory-cognee": {
+    "cogneeUrl": "http://localhost:8000",
+    "memoryPolicy": true,
+    "minDurabilityScore": 0.4,
+    "autoRecall": true,
+    "autoCapture": true,
+    "autoCognify": true,
+    "logPolicyDecisions": false
+  }
+}

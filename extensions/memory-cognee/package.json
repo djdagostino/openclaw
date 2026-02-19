@@ -1,0 +1,33 @@
+{
+  "name": "@openclaw/memory-cognee",
+  "version": "0.1.0",
+  "description": "Cognee-backed knowledge graph memory for OpenClaw",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf *.js *.d.ts *.js.map"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.32.0"
+  },
+  "peerDependencies": {
+    "openclaw": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "bridge/**/*"
+  ]
+}
