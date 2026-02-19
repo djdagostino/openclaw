@@ -37,6 +37,179 @@ New install? Start here: [Getting started](https://docs.openclaw.ai/start/gettin
 
 Model note: while any model is supported, I strongly recommend **Anthropic Pro/Max (100/200) + Opus 4.6** for long‑context strength and better prompt‑injection resistance. See [Onboarding](https://docs.openclaw.ai/start/onboarding).
 
+---
+
+## 🧠 Fork: Cognee Knowledge Graph Memory
+
+> **This is a fork of OpenClaw** with a custom memory extension that replaces the default file-based memory (`MEMORY.md`) with a **knowledge graph** powered by [Cognee](https://github.com/topoteretes/cognee).
+
+### Why Knowledge Graph Memory?
+
+Traditional memory stores text chunks and retrieves via vector similarity. This fails when you need:
+- **Relationship awareness**: "What decisions relate to this preference?"
+- **Entity linking**: "What do I know about Project Alpha across all conversations?"
+- **Context traversal**: Follow connections between related concepts
+
+| Feature | Default Memory | Cognee Memory |
+|---------|---------------|---------------|
+| Storage | Flat markdown files | Connected entity graph + vectors |
+| Retrieval | Simple search | Graph traversal + semantic search |
+| Growth | Manual only | Automatic from conversations |
+| Relationships | None | Automatic entity linking |
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  OpenClaw Plugin (TypeScript)                   │
+│  extensions/memory-cognee/index.ts                              │
+│                                                                 │
+│  Tools: memory_search, memory_store, memory_explore,            │
+│         memory_forget                                           │
+│  Hooks: before_agent_start (auto-recall)                        │
+│         agent_end (auto-capture)                                │
+│  CLI:   openclaw memory status/search/add/build/explore         │
+│                                                                 │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │ HTTP (localhost:8000)
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  Cognee Bridge (Python/FastAPI)                 │
+│  extensions/memory-cognee/bridge/server.py                      │
+│                                                                 │
+│  Endpoints:                                                     │
+│    /health, /status     → Health & statistics                   │
+│    /add                 → Store content                         │
+│    /cognify             → Build knowledge graph                 │
+│    /search              → Semantic + graph search               │
+│    /graph/explore       → Traverse relationships                │
+│                                                                 │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Cognee Core (Python)                        │
+│  Vector Store (LanceDB) + Graph Store (KuzuDB) + LLM (OpenAI)  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Quick Start
+
+**Prerequisites:**
+- Python 3.10-3.13 (3.14+ not supported)
+- Cognee 0.4.0 (0.5.x has Windows bugs)
+- OpenAI API key
+
+**1. Start the Cognee Bridge:**
+
+```bash
+cd extensions/memory-cognee/bridge
+
+# Set your API key
+export OPENAI_API_KEY="sk-..."   # Linux/macOS
+set OPENAI_API_KEY=sk-...        # Windows CMD
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start server
+python start_server.py
+```
+
+**2. Verify it's running:**
+
+```bash
+curl http://localhost:8000/health
+# → {"status":"healthy","initialized":true}
+```
+
+**3. Run OpenClaw** (the config is already set up):
+
+```bash
+openclaw agent --message "Remember that I prefer TypeScript"
+```
+
+### Testing the Bridge
+
+```bash
+# Add content
+curl -X POST http://localhost:8000/add \
+  -H "Content-Type: application/json" \
+  -d '{"text":"We use PostgreSQL for the database"}'
+
+# Build knowledge graph
+curl -X POST http://localhost:8000/cognify \
+  -H "Content-Type: application/json" \
+  -d '{"full_rebuild":false}'
+
+# Search
+curl -X POST http://localhost:8000/search \
+  -H "Content-Type: application/json" \
+  -d '{"query":"database","limit":5}'
+```
+
+### Memory Policy
+
+Not everything should be stored. The memory policy filters ephemeral content:
+
+```
+REJECTED (ephemeral):     PERSISTED (durable):
+├── "Hello!"              ├── "We decided to use PostgreSQL" (+0.30)
+├── "ok"                  ├── "I prefer TypeScript" (+0.25)
+├── "thanks"              └── "Remember to use HTTPS" (+0.40)
+└── "got it"
+```
+
+### Configuration
+
+The `openclaw.config.json` in repo root configures the extension:
+
+```json
+{
+  "plugins": {
+    "slots": {
+      "memory": "./extensions/memory-cognee"
+    }
+  },
+  "memory-cognee": {
+    "cogneeUrl": "http://localhost:8000",
+    "memoryPolicy": true,
+    "minDurabilityScore": 0.4,
+    "autoRecall": true,
+    "autoCapture": true,
+    "autoCognify": true
+  }
+}
+```
+
+### Staying Updated with Upstream
+
+This fork tracks the official OpenClaw repo:
+
+```bash
+# Fetch latest from official repo
+git fetch upstream
+
+# Update main branch
+git checkout main
+git merge upstream/main
+
+# Rebase customizations
+git checkout cognee-memory-extension
+git rebase main
+git push --force-with-lease
+```
+
+### Full Documentation
+
+See [docs/concepts/memory-cognee.md](docs/concepts/memory-cognee.md) for complete documentation including:
+- Detailed implementation guide
+- All API endpoints
+- CLI commands
+- Troubleshooting
+
+---
+
 ## Models (selection + auth)
 
 - Models config + CLI: [Models](https://docs.openclaw.ai/concepts/models)
