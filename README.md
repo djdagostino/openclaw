@@ -96,37 +96,73 @@ Traditional memory stores text chunks and retrieves via vector similarity. This 
 ### Quick Start
 
 **Prerequisites:**
+- Node.js 18+ and pnpm (or npm)
 - Python 3.10-3.13 (3.14+ not supported)
-- Cognee 0.4.0 (0.5.x has Windows bugs)
 - OpenAI API key
 
-**1. Start the Cognee Bridge:**
+#### Option 1: One-Command Startup (Windows)
+
+```bash
+# Set your API key
+set OPENAI_API_KEY=sk-proj-...
+
+# Run the startup script (handles everything)
+start.bat
+```
+
+This script automatically:
+- Installs pnpm if needed
+- Installs all Node.js dependencies
+- Creates Python venv and installs Cognee
+- Starts the Cognee bridge server
+- Starts OpenClaw
+
+#### Option 2: Manual Setup
+
+**1. Install dependencies:**
+
+```bash
+# Install pnpm if you don't have it
+npm install -g pnpm
+
+# Install project dependencies
+pnpm install
+```
+
+**2. Start the Cognee Bridge** (Terminal 1):
 
 ```bash
 cd extensions/memory-cognee/bridge
 
-# Set your API key
-export OPENAI_API_KEY="sk-..."   # Linux/macOS
-set OPENAI_API_KEY=sk-...        # Windows CMD
+# Create venv with Python 3.12 (not 3.14)
+py -3.12 -m venv .venv        # Windows
+python3.12 -m venv .venv      # Linux/macOS
 
-# Install dependencies
+# Activate and install
+.venv\Scripts\activate        # Windows
+source .venv/bin/activate     # Linux/macOS
+
 pip install -r requirements.txt
+
+# Set your API key
+set OPENAI_API_KEY=sk-...     # Windows
+export OPENAI_API_KEY=sk-...  # Linux/macOS
 
 # Start server
 python start_server.py
 ```
 
-**2. Verify it's running:**
+**3. Start OpenClaw** (Terminal 2):
+
+```bash
+npm start
+```
+
+**4. Verify it's running:**
 
 ```bash
 curl http://localhost:8000/health
 # → {"status":"healthy","initialized":true}
-```
-
-**3. Run OpenClaw** (the config is already set up):
-
-```bash
-openclaw agent --message "Remember that I prefer TypeScript"
 ```
 
 ### Testing the Bridge
