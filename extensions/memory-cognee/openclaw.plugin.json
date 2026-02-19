@@ -1,0 +1,40 @@
+{
+  "id": "memory-cognee",
+  "kind": "memory",
+  "name": "Cognee Memory",
+  "description": "Knowledge graph memory powered by Cognee with auto-recall and auto-capture",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "cogneeUrl": {
+        "type": "string",
+        "default": "http://localhost:8000"
+      },
+      "memoryPolicy": {
+        "type": "boolean",
+        "default": true
+      },
+      "minDurabilityScore": {
+        "type": "number",
+        "default": 0.4
+      },
+      "autoRecall": {
+        "type": "boolean",
+        "default": true
+      },
+      "autoCapture": {
+        "type": "boolean",
+        "default": true
+      },
+      "autoCognify": {
+        "type": "boolean",
+        "default": true
+      },
+      "logPolicyDecisions": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  }
+}

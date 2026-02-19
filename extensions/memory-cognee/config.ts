@@ -1,68 +1,135 @@
-import { z } from "zod";
-
 export const MEMORY_CATEGORIES = ["preference", "fact", "decision", "entity", "other"] as const;
 export type MemoryCategory = (typeof MEMORY_CATEGORIES)[number];
 
-export const cogneeConfigSchema = z.object({
+export type CogneeConfig = {
   // Cognee connection
-  cogneeUrl: z.string().url().default("http://localhost:8000"),
-
-  // LLM provider for Cognee (used for entity extraction, graph building)
-  llmProvider: z.enum(["openai", "anthropic", "ollama"]).default("openai"),
-  llmApiKey: z.string().optional(),
-  llmModel: z.string().default("gpt-4o-mini"),
-
-  // Embedding provider
-  embeddingProvider: z.enum(["openai", "ollama", "local"]).default("openai"),
-  embeddingModel: z.string().default("text-embedding-3-small"),
-  embeddingApiKey: z.string().optional(),
-
-  // Graph database (Cognee supports multiple)
-  graphStore: z.enum(["networkx", "neo4j", "falkordb"]).default("networkx"),
-  neo4jUrl: z.string().optional(),
-  neo4jUser: z.string().optional(),
-  neo4jPassword: z.string().optional(),
-
-  // Vector store
-  vectorStore: z.enum(["lancedb", "qdrant", "weaviate", "pgvector"]).default("lancedb"),
-  vectorUrl: z.string().optional(),
+  cogneeUrl: string;
 
   // Data directory for Cognee
-  dataDir: z.string().default("~/.openclaw/memory/cognee"),
+  dataDir: string;
 
   // Behavior
-  autoRecall: z.boolean().default(true),
-  autoCapture: z.boolean().default(true),
-  autoCognify: z.boolean().default(true), // Auto-build knowledge graph
+  autoRecall: boolean;
+  autoCapture: boolean;
+  autoCognify: boolean;
 
   // Search settings
-  searchLimit: z.number().min(1).max(20).default(5),
-  searchMinScore: z.number().min(0).max(1).default(0.3),
+  searchLimit: number;
+  searchMinScore: number;
 
   // Graph traversal depth for context retrieval
-  graphDepth: z.number().min(1).max(5).default(2),
+  graphDepth: number;
 
   // Capture settings
-  captureMaxChars: z.number().default(2000),
+  captureMaxChars: number;
 
   // Conversation ingestion settings
-  ingestConversation: z.boolean().default(true), // Ingest full conversations
-  ingestUserMessages: z.boolean().default(true), // Include user messages
-  ingestAssistantMessages: z.boolean().default(true), // Include agent responses
-  ingestMinLength: z.number().default(20), // Minimum message length to ingest
-  ingestBatchSize: z.number().default(10), // Max messages per cognify batch
-  cognifyAfterMessages: z.number().default(5), // Run cognify every N messages
-  conversationSummary: z.boolean().default(false), // Generate conversation summary for ingestion
+  ingestConversation: boolean;
+  ingestUserMessages: boolean;
+  ingestAssistantMessages: boolean;
+  ingestMinLength: number;
+  ingestBatchSize: number;
+  cognifyAfterMessages: number;
+  conversationSummary: boolean;
 
-  // Memory Policy settings (determines what qualifies as durable knowledge)
-  memoryPolicy: z.boolean().default(true), // Enable memory policy filtering
-  minDurabilityScore: z.number().min(0).max(1).default(0.4), // Minimum score to persist (0-1)
-  recurrenceFilter: z.boolean().default(false), // Require topic recurrence before persisting
-  recurrenceMinMentions: z.number().default(2), // Number of mentions required
-  llmDurabilityCheck: z.boolean().default(false), // Use LLM to evaluate durability (slower, more accurate)
-  logPolicyDecisions: z.boolean().default(false), // Log all policy decisions for debugging
-});
-
-export type CogneeConfig = z.infer<typeof cogneeConfigSchema>;
+  // Memory Policy settings
+  memoryPolicy: boolean;
+  minDurabilityScore: number;
+  recurrenceFilter: boolean;
+  recurrenceMinMentions: number;
+  llmDurabilityCheck: boolean;
+  logPolicyDecisions: boolean;
+};
 
 export const DEFAULT_CAPTURE_MAX_CHARS = 500;
+
+const DEFAULTS: CogneeConfig = {
+  cogneeUrl: "http://localhost:8000",
+  dataDir: "~/.openclaw/memory/cognee",
+  autoRecall: true,
+  autoCapture: true,
+  autoCognify: true,
+  searchLimit: 5,
+  searchMinScore: 0.3,
+  graphDepth: 2,
+  captureMaxChars: 2000,
+  ingestConversation: true,
+  ingestUserMessages: true,
+  ingestAssistantMessages: true,
+  ingestMinLength: 20,
+  ingestBatchSize: 10,
+  cognifyAfterMessages: 5,
+  conversationSummary: false,
+  memoryPolicy: true,
+  minDurabilityScore: 0.4,
+  recurrenceFilter: false,
+  recurrenceMinMentions: 2,
+  llmDurabilityCheck: false,
+  logPolicyDecisions: false,
+};
+
+export const cogneeConfigSchema = {
+  parse(value: unknown): CogneeConfig {
+    const cfg = (value && typeof value === "object" && !Array.isArray(value))
+      ? (value as Record<string, unknown>)
+      : {};
+
+    return {
+      cogneeUrl: typeof cfg.cogneeUrl === "string" ? cfg.cogneeUrl : DEFAULTS.cogneeUrl,
+      dataDir: typeof cfg.dataDir === "string" ? cfg.dataDir : DEFAULTS.dataDir,
+      autoRecall: typeof cfg.autoRecall === "boolean" ? cfg.autoRecall : DEFAULTS.autoRecall,
+      autoCapture: typeof cfg.autoCapture === "boolean" ? cfg.autoCapture : DEFAULTS.autoCapture,
+      autoCognify: typeof cfg.autoCognify === "boolean" ? cfg.autoCognify : DEFAULTS.autoCognify,
+      searchLimit: typeof cfg.searchLimit === "number" ? cfg.searchLimit : DEFAULTS.searchLimit,
+      searchMinScore: typeof cfg.searchMinScore === "number" ? cfg.searchMinScore : DEFAULTS.searchMinScore,
+      graphDepth: typeof cfg.graphDepth === "number" ? cfg.graphDepth : DEFAULTS.graphDepth,
+      captureMaxChars: typeof cfg.captureMaxChars === "number" ? cfg.captureMaxChars : DEFAULTS.captureMaxChars,
+      ingestConversation: typeof cfg.ingestConversation === "boolean" ? cfg.ingestConversation : DEFAULTS.ingestConversation,
+      ingestUserMessages: typeof cfg.ingestUserMessages === "boolean" ? cfg.ingestUserMessages : DEFAULTS.ingestUserMessages,
+      ingestAssistantMessages: typeof cfg.ingestAssistantMessages === "boolean" ? cfg.ingestAssistantMessages : DEFAULTS.ingestAssistantMessages,
+      ingestMinLength: typeof cfg.ingestMinLength === "number" ? cfg.ingestMinLength : DEFAULTS.ingestMinLength,
+      ingestBatchSize: typeof cfg.ingestBatchSize === "number" ? cfg.ingestBatchSize : DEFAULTS.ingestBatchSize,
+      cognifyAfterMessages: typeof cfg.cognifyAfterMessages === "number" ? cfg.cognifyAfterMessages : DEFAULTS.cognifyAfterMessages,
+      conversationSummary: typeof cfg.conversationSummary === "boolean" ? cfg.conversationSummary : DEFAULTS.conversationSummary,
+      memoryPolicy: typeof cfg.memoryPolicy === "boolean" ? cfg.memoryPolicy : DEFAULTS.memoryPolicy,
+      minDurabilityScore: typeof cfg.minDurabilityScore === "number" ? cfg.minDurabilityScore : DEFAULTS.minDurabilityScore,
+      recurrenceFilter: typeof cfg.recurrenceFilter === "boolean" ? cfg.recurrenceFilter : DEFAULTS.recurrenceFilter,
+      recurrenceMinMentions: typeof cfg.recurrenceMinMentions === "number" ? cfg.recurrenceMinMentions : DEFAULTS.recurrenceMinMentions,
+      llmDurabilityCheck: typeof cfg.llmDurabilityCheck === "boolean" ? cfg.llmDurabilityCheck : DEFAULTS.llmDurabilityCheck,
+      logPolicyDecisions: typeof cfg.logPolicyDecisions === "boolean" ? cfg.logPolicyDecisions : DEFAULTS.logPolicyDecisions,
+    };
+  },
+  uiHints: {
+    cogneeUrl: {
+      label: "Cognee Bridge URL",
+      placeholder: "http://localhost:8000",
+      help: "URL of the Cognee bridge server",
+    },
+    autoRecall: {
+      label: "Auto-Recall",
+      help: "Automatically inject relevant memories into context",
+    },
+    autoCapture: {
+      label: "Auto-Capture",
+      help: "Automatically capture important information from conversations",
+    },
+    autoCognify: {
+      label: "Auto-Cognify",
+      help: "Automatically build knowledge graph after capturing content",
+    },
+    memoryPolicy: {
+      label: "Memory Policy",
+      help: "Filter ephemeral vs durable content before storing",
+    },
+    minDurabilityScore: {
+      label: "Min Durability Score",
+      help: "Minimum score (0-1) for content to be persisted",
+      advanced: true,
+    },
+    logPolicyDecisions: {
+      label: "Log Policy Decisions",
+      help: "Log all memory policy decisions for debugging",
+      advanced: true,
+    },
+  },
+};
